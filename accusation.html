@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>FINAL PROTOCOL - ECLIPSE DEADLINE</title>
     <style>
         :root {
@@ -15,17 +16,19 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
-            overflow: hidden;
+            overflow-y: auto; /* 記述式は入力欄が多いためスクロールを許可 */
         }
         .container {
-            width: 600px;
+            width: 90%;
+            max-width: 650px;
             border: 2px solid var(--error-red);
-            padding: 40px;
-            background: rgba(20, 0, 0, 0.8);
+            padding: 30px;
+            background: rgba(20, 0, 0, 0.9);
             box-shadow: 0 0 30px rgba(255, 51, 51, 0.3);
             position: relative;
+            margin: 20px 0;
         }
         h2 {
             color: var(--error-red);
@@ -35,38 +38,46 @@
             padding-bottom: 10px;
         }
         .instruction {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             margin: 20px 0;
             line-height: 1.6;
+            color: #ccc;
         }
-        .selection-grid {
-            display: grid;
-            gap: 20px;
-            margin: 30px 0;
-        }
-        .select-group {
-            display: flex;
-            flex-direction: column;
+        .input-group {
+            margin-bottom: 25px;
         }
         label {
+            display: block;
             font-size: 0.8rem;
             color: var(--error-red);
-            margin-bottom: 5px;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
         }
-        select {
+        /* 入力欄のスタイル */
+        input[type="text"], textarea {
+            width: 100%;
             background: #000;
             color: #fff;
             border: 1px solid var(--error-red);
-            padding: 10px;
-            font-size: 1.1rem;
+            padding: 12px;
+            font-size: 1rem;
+            font-family: inherit;
+            box-sizing: border-box;
             outline: none;
+        }
+        textarea {
+            resize: vertical;
+            line-height: 1.5;
+        }
+        input[type="text"]:focus, textarea:focus {
+            box-shadow: 0 0 10px var(--error-red);
         }
         .btn-execute {
             width: 100%;
             background: var(--error-red);
             color: #000;
             border: none;
-            padding: 15px;
+            padding: 18px;
             font-weight: bold;
             font-size: 1.2rem;
             cursor: pointer;
@@ -76,12 +87,11 @@
             background: #fff;
             box-shadow: 0 0 20px #fff;
         }
-        /* スキャンライン演出 */
         .scanline {
             width: 100%; height: 100%;
-            background: linear-gradient(to bottom, transparent 50%, rgba(255,51,51,0.05) 50%);
+            background: linear-gradient(to bottom, transparent 50%, rgba(255,51,51,0.02) 50%);
             background-size: 100% 4px;
-            position: absolute; top:0; left:0; pointer-events:none;
+            position: fixed; top:0; left:0; pointer-events:none;
         }
     </style>
 </head>
@@ -90,51 +100,32 @@
     <div class="container">
         <h2>FINAL PROTOCOL</h2>
         <div class="instruction">
-            [警告] これよりバイオ・コンバーター再起動のための「質量提供」および「容疑者隔離」シーケンスを開始します。選択された対象は指定セクターへ強制移送されます。
+            [警告] これよりバイオリサイクル再起動シーケンスを開始します。隔離・投入する対象、およびその執行理由を入力してください。あなたの「言葉」がこの船の最終結論としてアーカイブされます。
         </div>
 
-        <div class="selection-grid">
-            <div class="select-group">
-                <label>対象 A (質量ユニット1)</label>
-                <select id="select-target-1">
-                    <option value="ハリス">ハリス船長</option>
-                    <option value="リク">操縦士リク</option>
-                    <option value="ノア">技師ノア</option>
-                    <option value="メイ">観測員メイ</option>
-                    <option value="医者">医師の遺体</option>
-                    <option value="柱">内装の木柱</option>
-                </select>
+        <div class="input-form">
+            <div class="input-group">
+                <label>EXECUTION_TARGET (誰を、または何を隔離・投入しますか？)</label>
+                <input type="text" id="player-target" placeholder="例：ノアと医師の遺体 / ハリス船長 / 柱">
             </div>
 
-            <div class="select-group">
-                <label>対象 B (質量ユニット2)</label>
-                <select id="select-target-2">
-                    <option value="ハリス">ハリス船長</option>
-                    <option value="リク">操縦士リク</option>
-                    <option value="ノア">技師ノア</option>
-                    <option value="メイ">観測員メイ</option>
-                    <option value="医者">医師の遺体</option>
-                    <option value="柱">内装の木柱</option>
-                </select>
+            <div class="input-group">
+                <label>DESTINATION (どこへ送りますか？)</label>
+                <input type="text" id="player-location" placeholder="例：バイオ・リアクター / 脱出ポッド">
             </div>
 
-            <div class="select-group">
-                <label>移送先セクター</label>
-                <select id="select-room">
-                    <option value="エンジン">バイオ・リアクター (エンジン部)</option>
-                    <option value="トイレ">後部トイレ</option>
-                    <option value="管制室">メインブリッジ</option>
-                    <option value="脱出ポッド">損傷した脱出ポッド</option>
-                </select>
+            <div class="input-group">
+                <label>FINAL_STATEMENT (執行の根拠、または最期の言葉)</label>
+                <textarea id="player-reason" rows="5" placeholder="例：ノア、お前の計算はここで終わりだ。この船を救うための質量になってもらう。"></textarea>
             </div>
         </div>
 
-        <button onclick="executeFinalCommand()" class="btn-execute">
-            EXECUTE COMMAND
+        <button onclick="executeFinalCommand()" id="execute-btn" class="btn-execute">
+            CONFIRM & EXECUTE
         </button>
         
         <div style="text-align: center; margin-top: 20px;">
-            <a href="detective.html" style="color: #555; font-size: 0.7rem; text-decoration: none;">>> 尋問に戻る (再考)</a>
+            <a href="detective.html" style="color: #666; font-size: 0.7rem; text-decoration: none;">>> 尋問に戻る (再考)</a>
         </div>
     </div>
 
