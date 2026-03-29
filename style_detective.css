@@ -1,0 +1,314 @@
+:root {
+    --neon-green: #00ff41;
+    --dark-bg: #050a05;
+    --dim-green: rgba(0, 255, 65, 0.15);
+    --warning-yellow: #ffff00;
+}
+
+/* 画面全体の固定 (PC用) */
+body {
+    background: var(--dark-bg);
+    color: var(--neon-green);
+    font-family: 'Courier New', monospace;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; /* PCではスクロールさせない */
+}
+
+/* スキャンラインエフェクト */
+body::after {
+    content: " ";
+    display: block;
+    position: fixed;
+    top: 0; left: 0; bottom: 0; right: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
+    background-size: 100% 4px;
+    z-index: 1000;
+    pointer-events: none;
+}
+
+/* メインコンテナ */
+.game-container {
+    display: flex;
+    width: 96vw;
+    height: 92vh;
+    gap: 20px;
+    box-sizing: border-box;
+}
+
+/* 共通パネル設定 */
+.panel {
+    border: 1px solid var(--neon-green);
+    background: rgba(0, 10, 0, 0.9);
+    padding: 20px;
+    box-shadow: inset 0 0 20px var(--dim-green);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+/* --- 左パネル (証拠品) --- */
+.side-panel {
+    width: 320px;
+    flex-shrink: 0;
+}
+
+#evidence-list {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 15px;
+    padding-right: 5px;
+}
+
+/* --- 右パネル (尋問メイン) --- */
+.main-panel {
+    flex: 1;
+    position: relative;
+}
+
+h3 {
+    border-bottom: 1px solid var(--neon-green);
+    margin-top: 0;
+    padding-bottom: 10px;
+    letter-spacing: 2px;
+    flex-shrink: 0;
+}
+
+/* メインメニュー (キャラ選択) */
+#main-menu {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.char-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-top: 20px;
+    overflow-y: auto;
+}
+
+/* --- 尋問ルーム (重要) --- */
+#interrogation-room {
+    display: none;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+
+.chat-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--dim-green);
+    margin-bottom: 15px;
+    flex-shrink: 0;
+}
+
+/* 🟢 チャットログエリア */
+#chat-log {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px;
+    border: 1px inset var(--neon-green);
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 4px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--neon-green) transparent;
+}
+
+/* 🟢 入力エリア */
+.input-area {
+    display: flex;
+    margin-top: 15px;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+/* キャラクターカード */
+.char-card {
+    border: 1px solid var(--neon-green);
+    background: #000;
+    display: flex;
+    align-items: center;
+    height: 80px;
+    cursor: pointer;
+    transition: 0.3s;
+    overflow: hidden;
+}
+
+.char-thumb {
+    width: 80px;
+    height: 80px;
+    border-right: 1px solid var(--neon-green);
+    flex-shrink: 0;
+}
+
+.char-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: sepia(1) hue-rotate(90deg) brightness(0.8);
+}
+
+.char-card:hover {
+    background: var(--dim-green);
+    box-shadow: 0 0 15px var(--neon-green);
+}
+
+.char-card:hover .char-thumb img {
+    filter: none;
+    brightness: 1.1;
+}
+
+/* メッセージ装飾 */
+.msg {
+    margin-bottom: 20px;
+    line-height: 1.6;
+    max-width: 90%;
+    word-wrap: break-word;
+}
+
+.msg.user {
+    color: #fff;
+    text-align: right;
+    margin-left: auto;
+    border-right: 2px solid #fff;
+    padding-right: 12px;
+}
+
+.msg.model {
+    color: var(--neon-green);
+    border-left: 2px solid var(--neon-green);
+    padding-left: 12px;
+}
+
+/* 汎用コンポーネント */
+input[type="text"] {
+    flex: 1;
+    background: #000;
+    border: 1px solid var(--neon-green);
+    color: var(--neon-green);
+    padding: 12px;
+    font-family: inherit;
+}
+
+button {
+    background: var(--dim-green);
+    color: var(--neon-green);
+    border: 1px solid var(--neon-green);
+    padding: 10px 20px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+button:hover {
+    background: var(--neon-green);
+    color: #000;
+}
+
+.danger-btn {
+    border-color: #ff4444;
+    color: #ff4444;
+    margin-top: 10px;
+    flex-shrink: 0;
+}
+
+.danger-btn:hover {
+    background: #ff4444;
+    color: #fff;
+}
+
+/* スクロールバー設定 */
+#chat-log::-webkit-scrollbar,
+#evidence-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+#chat-log::-webkit-scrollbar-thumb,
+#evidence-list::-webkit-scrollbar-thumb {
+    background-color: var(--neon-green);
+}
+
+/* --------------------------------------------------
+   🟢 ここから追加：レスポンシブ対応 (スマートフォン/縦画面) 
+   -------------------------------------------------- */
+@media (max-width: 850px) {
+    /* 1. 画面全体の「閉じ込め」を完全に解除 */
+    html, body {
+        overflow-y: auto !important; /* 強制的に縦スクロールを許可 */
+        overflow-x: hidden;
+        height: auto !important;     /* 100vhの縛りを捨てる */
+        min-height: 100vh;
+        display: block !important;   /* Flexによる中央寄せを解除 */
+    }
+
+    /* 2. コンテナを「ただの箱」にする */
+    .game-container {
+        display: block !important;   /* GridやFlexを解除し、上から順に並べる */
+        width: 100%;
+        height: auto !important;     /* 高さを内容に任せる */
+        padding: 10px;
+        gap: 0;                      /* 余白はmarginで制御する方が安全 */
+    }
+
+    /* 3. 各パネルを縦に並べる */
+    .panel {
+        width: 100% !important;
+        height: auto !important;     /* パネル自体の高さ固定を解除 */
+        margin-bottom: 20px;
+        overflow: visible !important; /* 中身がはみ出してもスクロールできるように */
+    }
+
+    /* 4. 左パネル（証拠品）の設定 */
+    .side-panel {
+        margin-bottom: 20px;
+    }
+
+    #evidence-list {
+        max-height: 300px;           /* 証拠が多すぎる時はこの中だけでスクロール */
+        overflow-y: auto;
+    }
+
+    /* 5. 右パネル（尋問エリア）の設定 */
+    .main-panel {
+        /* チャットログが見えるよう、ここだけはある程度の高さを確保 */
+        height: 80vh !important; 
+        min-height: 500px;
+        position: relative;
+    }
+
+    /* 6. キャラクター選択 */
+    .char-grid {
+        grid-template-columns: 1fr;  /* 1列にする */
+        height: auto;
+        overflow: visible;
+    }
+
+    /* 7. 尋問ルーム内部 */
+    #interrogation-room {
+        height: 100%;                /* main-panelの80vhに合わせる */
+        display: none;               /* JSでの制御用。表示時はflexになる */
+    }
+
+    /* チャットログは入力欄を押し下げないよう、ここだけでスクロール */
+    #chat-log {
+        flex: 1;
+        overflow-y: auto;
+    }
+
+    /* 8. 入力エリア */
+    .input-area {
+        padding-bottom: 30px;        /* 下端のボタンが隠れないよう広めに余白を取る */
+    }
+}

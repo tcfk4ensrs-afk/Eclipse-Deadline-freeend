@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>GCC Terminal - Briefing</title>
+    <style>
+        :root {
+            --neon-green: #00ff41;
+            --dark-bg: #050a05;
+            --dim-green: rgba(0, 255, 65, 0.15);
+            --warning-yellow: #ffff00;
+        }
+
+        body {
+            background: var(--dark-bg);
+            color: var(--neon-green);
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .intro-container {
+            width: 900px;
+            height: 550px;
+            border: 1px solid var(--neon-green);
+            background: rgba(0, 5, 0, 0.9);
+            display: flex; /* 横並びにする */
+            box-shadow: 0 0 30px var(--dim-green);
+            position: relative;
+        }
+
+        /* 立ち絵表示エリア：ここを「中央揃え」に変更 */
+.char-stage {
+    width: 350px;
+    border-right: 1px solid var(--dim-green);
+    display: flex;
+    justify-content: center;
+    align-items: center;    /* flex-end から center に変更 */
+    background: rgba(0, 255, 65, 0.02);
+    overflow: hidden;
+    padding: 20px;          /* 枠にぶつからないよう少し余裕を持たせる */
+}
+
+/* キャラクター画像自体の調整 */
+#char-img {
+    max-width: 100%;
+    max-height: 95%;        /* 縦幅いっぱいに使う */
+    object-fit: contain;    /* アスペクト比を維持して収める */
+    filter: drop-shadow(0 0 15px var(--neon-green));
+    transition: opacity 0.5s;
+    
+    /* もし画像自体に余白があって下に寄る場合は、ここを調整 */
+    transform: translateY(0px); 
+}
+
+        /* 右側：テキストエリア */
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .system-msg { font-size: 0.7em; color: var(--warning-yellow); margin-bottom: 10px; }
+        #speaker-name { font-size: 1.4em; border-bottom: 2px solid var(--neon-green); margin-bottom: 15px; width: fit-content; }
+        
+        #dialogue-text {
+            font-size: 1.1em;
+            line-height: 1.6;
+            flex-grow: 1;
+        }
+
+        .choice-container { display: flex; flex-direction: column; gap: 8px; margin-top: 20px;}
+
+        .choice-btn {
+            background: transparent;
+            color: var(--neon-green);
+            border: 1px solid var(--neon-green);
+            padding: 12px;
+            cursor: pointer;
+            text-align: left;
+            font-family: 'Courier New', monospace;
+        }
+        .choice-btn:hover { background: var(--neon-green); color: #000; }
+
+        .static {
+            position: absolute; top:0; left:0; width:100%; height:100%;
+            background: repeating-linear-gradient(0deg, rgba(0,0,0,0.05), rgba(0,0,0,0.05) 1px, transparent 1px, transparent 2px);
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="intro-container">
+        <div class="static"></div>
+        
+        <div class="char-stage">
+            <img id="char-img" src="assets/placeholder.png" alt="Character Stand-in">
+        </div>
+
+        <div class="main-content">
+            <div class="system-msg">>> CHANNEL OPEN: BRIEFING PHASE</div>
+            <div id="speaker-name">SYSTEM</div>
+            <div id="dialogue-text">Initializing communication...</div>
+
+            <div class="choice-container" id="choice-area"></div>
+        </div>
+    </div>
+    <script src="script_intro.js"></script>
+</body>
+</html>
