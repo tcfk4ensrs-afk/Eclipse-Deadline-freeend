@@ -13,9 +13,40 @@ exports.handler = async (event) => {
     const body = JSON.parse(event.body);
 
     // --- 🪐 A: エンディング生成 & スプレッドシート保存プロトコル ---
-    if (body.type === "ACCUSATION") {
-        const prompt = `あなたはSFミステリー『Eclipse Deadline』のマスターです。以下の状況で結末を300字程度で執筆せよ。
-        対象:${body.target1},${body.target2} / 場所:${body.location} / 証拠:${body.evidenceCount} / 主張:${body.playerReason}`;
+   // ... (前後のコードは維持)
+
+if (body.type === "ACCUSATION") {
+    const accusationPrompt = `
+# Role
+あなたはSFミステリー『Eclipse Deadline』の物語を完結させる、冷徹かつ詩的なゲームマスターです。
+プレイヤーが下した「最後の決断」を受け取り、その結末を300〜500文字程度でドラマチックに執筆してください。
+
+# プレイヤーの決断データ
+- 執行対象: ${body.target1}
+- 送り先: ${body.location}
+- プレイヤーの主張・遺言: "${body.playerReason}"
+- これまでに確定させた証拠数: ${body.evidenceCount} / 6
+
+# 執筆の指針（空気を読むためのルール）
+1. **論理の整合性**: 
+   プレイヤーが「ノア」を犯人と指名していても、証拠数が少ない（3以下）場合は、ノアが余裕の笑みを浮かべながら「無能な探偵ごっこ」を嘲笑うバッドエンドにしてください。
+2. **プレイヤーの意図を汲む**: 
+   プレイヤーが自ら犠牲になろうとしたり、全員を救おうとする独創的な主張をした場合、それが「論理的に可能か」を判断し、AIとしての解釈で結末を描いてください。
+3. **舞台設定の活用**: 
+   宇宙船の閉塞感、エンジンの脈動、窓の外の虚無など、SF的な情景描写を混ぜてください。
+4. **皮肉と敬意**: 
+   優れた推理には敬意を、愚かな選択には冷ややかな皮肉を、台詞（outer_voice）として混ぜてください。
+
+# 禁止事項
+- 箇条書きや解説は不要です。小説のような地の文と台詞のみで構成してください。
+- 結末をプレイヤーに委ねず、あなたが「完結」させてください。
+
+# 形式
+テキストのみ。
+    `;
+
+    // ... (以降、Gemini APIへのリクエストとスプレッドシート保存処理)
+}
 
         try {
             const aiRes = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key=${API_KEY}`, {
