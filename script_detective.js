@@ -46,8 +46,6 @@ class Game {
             await this.loadAllCharacters();
             this.renderCharacterList();
             this.updateEvidenceUI();
-            
-            // Netlify環境ではフロントのAPIキーチェックは不要
             console.log("System Ready with Cloud Protocol.");
         } catch (e) {
             console.error("Init Error:", e);
@@ -124,9 +122,15 @@ class Game {
             const char = this.characters.find(c => c.id === this.currentCharacterId);
             const history = this.state.history[this.currentCharacterId] || [];
             
-            // window.sendToAI を呼び出し（ai.js経由）
-            const responseText = await window.sendToAI(this.constructPrompt(char), text, history);
+            // AIからの回答取得
+            let responseText = await window.sendToAI(this.constructPrompt(char), text, history);
             
+            // 🟢 ガード：AIがタグ（outer_voice:等）を含めてしまった場合のクリーニング
+            responseText = responseText
+                .replace(/outer_voice[:：]\s*/gi, "")
+                .replace(/inner_voice[:：][\s\S]*/gi, "")
+                .trim();
+
             this.appendMessage('model', responseText);
             this.checkTruthUpdate(responseText);
         } catch (e) {
@@ -186,17 +190,13 @@ class Game {
     }
 
     appendMessage(role, text) {
-        let displayOuter = text;
-        if (role === 'model') {
-            displayOuter = text.replace(/outer_voice[:：]\s*/i, "").replace(/inner_voice[:：][\s\S]*/i, "").trim();
-        }
         if (!this.state.history[this.currentCharacterId]) {
             this.state.history[this.currentCharacterId] = [];
         }
         this.state.history[this.currentCharacterId].push({ 
-            role, text: displayOuter, displayOuter 
+            role, text: text, displayOuter: text 
         });
-        this.renderSingleMessage(role, displayOuter, "");
+        this.renderSingleMessage(role, text, "");
     }
 
     renderSingleMessage(role, outer, inner) {
@@ -217,7 +217,6 @@ class Game {
     }
 
     constructPrompt(char) {
-        const history = this.state.history[char.id] || [];
         const evidenceString = this.state.evidences.map(e => `${e.name || e.item}(状態:${e.detail.includes('【確定】') ? '【確定】済み' : '未確定'})`).join(', ');
 
         const gossipDatabase = {
@@ -241,7 +240,6 @@ class Game {
 
         const mySecret = gossipDatabase[char.id] || {};
 
-        // 🟢 ノア（engineer）専用の鉄壁ルール
         let characterSpecificInstruction = "";
         if (char.id === 'engineer') {
             characterSpecificInstruction = `
@@ -256,20 +254,22 @@ class Game {
 
 # 行動指針
 - 自分の罪は【確定】証拠が出るまで認めず、他人へ責任を転嫁してください。
-- 証拠の「状態」を読み、未確定ならとぼけ、確定済みなら観念（またはノアなら逆襲）の情報を出してください。
+- 証拠の「状態」を読み、未確定ならとぼけ、確定済みなら背景を話してください（ノア以外）。
 ${characterSpecificInstruction}
 
 # 応答ロジック
 1. **未確定の証拠**：否定しつつ「${mySecret.others}」から情報を出し、他人の不審な点を強調。
-2. **【確定】済みの証拠**：言い逃れを諦め背景を話す。ただしノアは「他人の工作」と言い張り、医師をリソースとして扱った合理性を説く。
-3. **エンジンの真実**：「人間2人分の生贄」が必要という冷酷な仕様を、状況に応じて小出しにする。
+2. **【確定】済みの証拠**：言い逃れを諦め背景を話す。ただしノアは「他人の工作」と言い張り、合理性を説く。
+3. **エンジンの真実**：「人間2人分の生贄」が必要という仕様を、状況に応じて小出しにする。
+
+# 禁止事項（重要）
+- 1つの質問に対し、1つの発言（セリフ）のみを返してください。
+- **一度に複数の証拠について回答しないでください。**
+- 「outer_voice:」などのラベルを付けず、セリフのみを出力してください。
 
 # 状況
 - 現在の証拠: ${evidenceString}
 - あなたの知識: ${JSON.stringify(char.timeline_memory)}
-
-# 形式
-outer_voice: [セリフと描写]
         `.trim();
     }
 
