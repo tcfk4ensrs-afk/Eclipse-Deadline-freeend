@@ -1,4 +1,4 @@
-const fetch = require('node-fetch');
+
 
 // 🟢 あなたのGASウェブアプリURL
 const GAS_URL = "https://script.google.com/macros/s/AKfycbzT7WL3cFXCnb9NLATPWKEAbVir5vZV2NE-eLMciQ46m-gLGiuRjofc-YerUpFcE0x41Q/exec";
