@@ -108,33 +108,37 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // accusation.js から保存されたテキストを取得
-            const text = sessionStorage.getItem('finalEndingText') || "記録が正常に読み込めませんでした。宇宙の深淵にデータが消失したようです。";
-            const displayElement = document.getElementById('ending-text');
-            const footer = document.getElementById('footer');
-            const cursor = document.getElementById('cursor');
+        // ending_result.html の script 部分
+document.addEventListener('DOMContentLoaded', () => {
+    // セッションストレージから取得
+    const text = sessionStorage.getItem('finalEndingText');
+    
+    // ログを表示（F12で見えるはず）
+    console.log("Ending Text in SessionStorage:", text);
 
-            let i = 0;
-            const speed = 70; // 1文字出すスピード（ミリ秒）
+    const displayElement = document.getElementById('ending-text');
+    const footer = document.getElementById('footer');
 
-            function typeWriter() {
-                if (i < text.length) {
-                    displayElement.innerHTML += text.charAt(i);
-                    i++;
-                    // 文字数に応じてスクロール位置を調整
-                    window.scrollTo(0, document.body.scrollHeight);
-                    setTimeout(typeWriter, speed);
-                } else {
-                    // 終了後の演出
-                    cursor.style.display = 'none';
-                    footer.style.opacity = '1';
-                }
-            }
+    if (!text || text === "undefined") {
+        displayElement.innerHTML = ">>> ERROR: ENDING_DATA_NOT_FOUND\n>>> 記録の復元に失敗しました。";
+        footer.style.opacity = "1";
+        return;
+    }
 
-            // 少し待ってから開始（没入感のため）
-            setTimeout(typeWriter, 1000);
-        });
+    // タイプライター開始
+    let i = 0;
+    function type() {
+        if (i < text.length) {
+            displayElement.innerHTML += text.charAt(i);
+            i++;
+            setTimeout(type, 50);
+        } else {
+            footer.style.opacity = "1";
+            document.getElementById('cursor').style.display = "none";
+        }
+    }
+    setTimeout(type, 500);
+});
     </script>
 </body>
 </html>
